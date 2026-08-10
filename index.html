@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartNotes by Hex-dev-kiran</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card: #1a1a1a;
+      --text: #e0e0e0;
+      --accent: #00FF88;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      color: var(--accent);
+      text-align: center;
+    }
+    textarea, input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      background: var(--card);
+      border: 1px solid #333;
+      color: var(--text);
+      border-radius: 8px;
+    }
+    button {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      opacity: 0.8;
+    }
+    .note {
+      background: var(--card);
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border-left: 3px solid var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📝 SmartNotes - Hex-dev-kiran</h1>
+    <p>Apne notes likho, search karo, save ho jayenge browser me</p>
+
+    <input type="text" id="title" placeholder="Note Title...">
+    <textarea id="content" rows="5" placeholder="Apna note yaha likho..."></textarea>
+    <button onclick="addNote()">Add Note</button>
+    <input type="text" id="search" placeholder="🔍 Search notes..." onkeyup="searchNotes()">
+
+    <div id="notesList"></div>
+  </div>
+
+  <script>
+    let notes = JSON.parse(localStorage.getItem('notes')) || [];
+
+    function addNote() {
+      const title = document.getElementById('title').value;
+      const content = document.getElementById('content').value;
+      if(title === '' || content === '') return;
+      
+      notes.push({title, content, date: new Date().toLocaleDateString()});
+      localStorage.setItem('notes', JSON.stringify(notes));
+      
+      document.getElementById('title').value = '';
+      document.getElementById('content').value = '';
+      displayNotes();
+    }
+
+    function displayNotes(filter = '') {
+      const notesList = document.getElementById('notesList');
+      notesList.innerHTML = '';
+      notes.filter(n => n.title.includes(filter) || n.content.includes(filter))
+           .reverse()
+           .forEach(note => {
+        notesList.innerHTML += `
+          <div class="note">
+            <h3>${note.title}</h3>
+            <p>${note.content}</p>
+            <small>${note.date}</small>
+          </div>
+        `;
+      });
+    }
+
+    function searchNotes() {
+      const query = document.getElementById('search').value;
+      displayNotes(query);
+    }
+
+    displayNotes(); // load on start
+  </script>
+</body>
+</html>
